@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
 
     # Kiwoom API
-    KIWOOM_APPKEY: str = "" # "b9SoeFzHpcbrTYSxdLld3XPkHH7OlHQ_bSlE4eEweEo"
-    KIWOOM_SECRETKEY: str = "" #"9Rj-zKHHFnvEFYO07NABIp-tDdvmn3afWGPdtPSkWqU"
-    KIWOOM_BASE_URL: str = "" #"https://api.kiwoom.com"
+    KIWOOM_APPKEY: str
+    KIWOOM_SECRETKEY: str
+    KIWOOM_BASE_URL: str
 
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
