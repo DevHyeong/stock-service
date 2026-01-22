@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from app.models.response import APIResponse
-from app.models.auth import TokenResponse
+from app.schemas.response import APIResponse
+from app.schemas.auth import TokenResponse
 from app.services.auth_service import AuthService
 from app.api.deps import get_auth_service
 

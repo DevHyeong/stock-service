@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from app.models.response import APIResponse
+from app.schemas.response import APIResponse
 from app.services.kiwoom_service import KiwoomService
 from app.api.deps import get_kiwoom_service
 from typing import Optional

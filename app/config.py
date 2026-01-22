@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     KIWOOM_SECRETKEY: str
     KIWOOM_BASE_URL: str
 
+    # 데이터베이스 설정 추가
+    DATABASE_URL: str
+    DB_ECHO: bool = False
+
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
 

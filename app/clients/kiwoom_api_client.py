@@ -1,6 +1,6 @@
 from app.config import settings
 from app.core.exceptions import KiwoomAPIException
-from app.models.stock import StockItem, ForeignTradingItem, ForeignTradingResponse
+from app.schemas.stock import StockItem, ForeignTradingItem, ForeignTradingResponse
 from app.core.logger import logger
 
 class KiwoomApiClient:

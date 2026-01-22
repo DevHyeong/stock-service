@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+
 from app.api.v1 import auth, foreign, stock
+from app.config import settings
 from app.core.logger import logger
 
 # FastAPI 앱 생성
