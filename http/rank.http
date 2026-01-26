@@ -1,0 +1,27 @@
+### 거래대금 상위 종목 조회 - 전체 시장
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=000&mang_stk_incls=0&stex_tp=1
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - 코스피
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=001&mang_stk_incls=0&stex_tp=1
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - 코스닥
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=101&mang_stk_incls=0&stex_tp=1
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - 관리종목 포함
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=000&mang_stk_incls=1&stex_tp=1
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - NXT 거래소
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=000&mang_stk_incls=0&stex_tp=2
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - 통합 거래소
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=000&mang_stk_incls=0&stex_tp=3
+Accept: application/json
+
+### 거래대금 상위 종목 조회 - 연속 조회
+GET http://localhost:8000/api/v1/rank/trade-price?mrkt_tp=000&mang_stk_incls=0&stex_tp=1&cont_yn=Y&next_key=다음키값
+Accept: application/json
