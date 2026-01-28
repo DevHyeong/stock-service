@@ -1,8 +1,8 @@
-from app.clients.rank.dto.response.trade_rank_item import TradeRankResponse
-from app.clients.rank.enums.mang_stk_incls import MangStkIncls
-from app.clients.rank.enums.market_type import MarketType
-from app.clients.rank.enums.stex_type import StexType
-from app.clients.rank.rank_client import RankClient
+from app.domain.rank.dto.response.trade_rank_item import TradeRankResponse
+from app.domain.rank.enums.mang_stk_incls import MangStkIncls
+from app.domain.rank.enums.market_type import MarketType
+from app.domain.rank.enums.stex_type import StexType
+from app.domain.rank.rank_client import RankClient
 from app.common.auth_client import AuthClient
 
 

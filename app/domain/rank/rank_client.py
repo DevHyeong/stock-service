@@ -2,10 +2,10 @@ from typing import Optional
 
 import httpx
 
-from app.clients.rank.dto.response.trade_rank_item import TradeRankResponse, TradeRankItem
-from app.clients.rank.enums.mang_stk_incls import MangStkIncls
-from app.clients.rank.enums.market_type import MarketType
-from app.clients.rank.enums.stex_type import StexType
+from app.domain.rank.dto.response.trade_rank_item import TradeRankResponse, TradeRankItem
+from app.domain.rank.enums.mang_stk_incls import MangStkIncls
+from app.domain.rank.enums.market_type import MarketType
+from app.domain.rank.enums.stex_type import StexType
 from app.config import settings
 
 

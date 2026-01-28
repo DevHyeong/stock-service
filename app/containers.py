@@ -1,9 +1,9 @@
 # app/containers.py
 from dependency_injector import containers, providers
 
-from app.clients.rank.rank_client import RankClient
-from app.clients.rank.repositories.rank_repository import RankRepository
-from app.clients.rank.services.rank_service import RankService
+from app.domain.rank import RankClient
+from app.domain.rank.repositories.rank_repository import RankRepository
+from app.domain.rank.services.rank_service import RankService
 from app.common.auth_client import AuthClient
 
 
