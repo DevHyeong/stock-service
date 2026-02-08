@@ -5,7 +5,7 @@ from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeSt
 from app.domain.stock.repositories.stock_client import StockClient
 
 
-class StockRepository:
+class StockApiRepository:
     def __init__(self, auth_client: AuthClient, stock_client: StockClient):
         self.auth_client = auth_client
         self.stock_client = stock_client

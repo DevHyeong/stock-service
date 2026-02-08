@@ -6,7 +6,7 @@ from app.domain.rank.repositories.rank_repository import RankRepository
 from app.domain.rank.services.rank_service import RankService
 from app.common.auth_client import AuthClient
 from app.domain.stock.repositories.stock_client import StockClient
-from app.domain.stock.repositories.stock_repository import StockRepository
+from app.domain.stock.repositories.stock_api_repository import StockApiRepository
 from app.domain.stock.services.stock_service import StockService
 
 
@@ -28,7 +28,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     stock_repository = providers.Factory(
-        StockRepository,
+        StockApiRepository,
         auth_client=auth_client,
         stock_client=stock_client
     )
