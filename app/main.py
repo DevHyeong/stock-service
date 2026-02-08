@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import rank_controller
+from app.api import rank_controller, stock_controller
 from app.api.v1 import auth, foreign, stock
 from app.config import settings
 from app.containers import Container
@@ -38,6 +38,7 @@ def create_app() -> FastAPI:
     app.include_router(foreign.router, prefix=settings.API_V1_PREFIX)
     app.include_router(stock.router, prefix=settings.API_V1_PREFIX)
     app.include_router(rank_controller.router, prefix=settings.API_V1_PREFIX)
+    app.include_router(stock_controller.router, prefix=settings.API_V1_PREFIX)
 
     return app
 

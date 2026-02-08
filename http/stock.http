@@ -14,3 +14,8 @@ Accept: application/json
 GET http://localhost:8000/api/v1/stock/list?market=KOSDAQ&page=1&size=20
 Accept: application/json
 Content-Type: application/json
+
+### 쿼리 파라미터 포함
+GET http://localhost:8000/api/v1/stock/investor-daily-trade?strt_dt=20230101&end_dt=20230131&trde_tp=1&mrkt_tp=001&invsr_tp=8000&stex_tp=1
+Accept: application/json
+Content-Type: application/json
