@@ -4,10 +4,10 @@ from typing import Optional
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
 
-from app.domain.rank.dto import TradeRankResponse
-from app.domain.rank.enums import MangStkIncls
-from app.domain.rank.enums import MarketType
-from app.domain.rank.enums import StexType
+from app.domain.rank.dto.response.trade_rank_item import TradeRankResponse
+from app.domain.rank.enums.mang_stk_incls import MangStkIncls
+from app.domain.rank.enums.market_type import MarketType
+from app.domain.rank.enums.stex_type import StexType
 from app.domain.rank.services.rank_service import RankService
 from app.containers import Container
 

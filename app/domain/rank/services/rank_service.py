@@ -7,7 +7,6 @@ from app.domain.rank.enums.stex_type import StexType
 from app.domain.rank.repositories.rank_repository import RankRepository
 
 
-
 class RankService:
     def __init__(self, rank_repository: RankRepository):
         self.rank_repository = rank_repository

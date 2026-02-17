@@ -12,7 +12,11 @@ from app.domain.stock.services.stock_service import StockService
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        modules=["app.api.rank_controller", "app.api.stock_controller"],
+        modules=[
+            "app.api.rank_controller",
+            "app.api.stock_controller",
+            "app.api.v1.trading"
+        ],
     )
 
     # Clients (Singleton - 토큰 상태 유지)

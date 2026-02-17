@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import rank_controller, stock_controller
-from app.api.v1 import auth, foreign, stock
+from app.api.v1 import auth, foreign, stock, market, sector, trading
 from app.config import settings
 from app.containers import Container
 from app.core.logger import logger
@@ -37,6 +37,9 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
     app.include_router(foreign.router, prefix=settings.API_V1_PREFIX)
     app.include_router(stock.router, prefix=settings.API_V1_PREFIX)
+    app.include_router(market.router, prefix=settings.API_V1_PREFIX)
+    app.include_router(sector.router, prefix=settings.API_V1_PREFIX)
+    app.include_router(trading.router, prefix=settings.API_V1_PREFIX)
     app.include_router(rank_controller.router, prefix=settings.API_V1_PREFIX)
     app.include_router(stock_controller.router, prefix=settings.API_V1_PREFIX)
 

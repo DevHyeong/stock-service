@@ -41,5 +41,25 @@ class KiwoomService:
         }
 
 
+    async def get_execution_info(self, stock_code: str) -> dict:
+        '''체결정보 조회 (ka10003)'''
+        token = await auth_service.ensure_token()
+
+        return await kiwoom_api_client.get_execution_info(
+            auth_headers={"token": token},
+            stock_code=stock_code
+        )
+
+
+    async def get_bid_ask(self, stock_code: str) -> dict:
+        '''호가정보 조회 (ka10004)'''
+        token = await auth_service.ensure_token()
+
+        return await kiwoom_api_client.get_bid_ask(
+            auth_headers={"token": token},
+            stock_code=stock_code
+        )
+
+
 # 싱글톤 인스턴스
 kiwoom_service = KiwoomService()
