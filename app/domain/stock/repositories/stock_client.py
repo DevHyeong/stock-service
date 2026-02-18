@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from app.common.api_client import ApiClient
@@ -34,8 +35,8 @@ class StockClient:
             method= "POST",
             path= INVESTOR_DAILY_TRADE_STOCK_PATH,
             response_model=InvestorDailyTradeResponse,
-            json=investorDailyTradeStockRequest
+            json=investorDailyTradeStockRequest.model_dump()
         )
 
-        return response.trades
+        return response.invsr_daly_trde_stk
 
