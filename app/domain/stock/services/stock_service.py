@@ -9,7 +9,7 @@ class StockService:
     def __init__(self, stock_repository: StockApiRepository):
         self.stock_repository = stock_repository
 
-    async def get_investor_daily_trade_stock(
+    async def sync_investor_daily_trade_stock(
         self,
         investorDailyTradeStockRequest: InvestorDailyTradeStockRequest,
     ) -> List[InvestorDailyTradeStock]:
@@ -20,3 +20,10 @@ class StockService:
             await uow.commit()
 
         return trades
+
+    async def get_investor_daily_trade_stock(
+        self,
+        request: InvestorDailyTradeStockRequest,
+    ) -> List[InvestorDailyTradeStock]:
+        async with StockUnitOfWork() as uow:
+            return await uow.investor_daily_trade_repo.get_by_request(request)

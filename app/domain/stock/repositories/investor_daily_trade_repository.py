@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -61,3 +61,39 @@ class InvestorDailyTradeRepository:
         await self.db.execute(stmt)
 
         return len(data)
+
+    async def get_by_request(
+        self,
+        request: InvestorDailyTradeStockRequest
+    ) -> List[InvestorDailyTradeStock]:
+        stmt = (
+            select(InvestorDailyTrade)
+            .where(
+                InvestorDailyTrade.start_date == request.strt_dt,
+                InvestorDailyTrade.end_date == request.end_dt,
+                InvestorDailyTrade.trade_type == request.trde_tp,
+                InvestorDailyTrade.market_type == request.mrkt_tp,
+                InvestorDailyTrade.investor_type == request.invsr_tp,
+                InvestorDailyTrade.exchange_type == request.stex_tp,
+            )
+        )
+
+        result = await self.db.execute(stmt)
+        rows = result.scalars().all()
+
+        return [
+            InvestorDailyTradeStock(
+                stk_cd=row.stock_code,
+                stk_nm=row.stock_name,
+                netslmt_qty=row.net_sell_qty or "",
+                netslmt_amt=row.net_sell_amt or "",
+                prsm_avg_pric=row.est_avg_price or "",
+                cur_prc=row.current_price or "",
+                pre_sig=row.change_sign or "",
+                pred_pre=row.day_change or "",
+                avg_pric_pre=row.avg_price_change or "",
+                pre_rt=row.change_rate or "",
+                dt_trde_qty=row.period_trade_volume or "",
+            )
+            for row in rows
+        ]
