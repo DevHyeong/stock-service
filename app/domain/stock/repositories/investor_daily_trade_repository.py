@@ -59,6 +59,5 @@ class InvestorDailyTradeRepository:
         )
 
         await self.db.execute(stmt)
-        await self.db.commit()
 
         return len(data)
