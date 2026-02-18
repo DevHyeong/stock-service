@@ -8,6 +8,9 @@ from app.common.auth_client import AuthClient
 from app.domain.stock.repositories.stock_client import StockClient
 from app.domain.stock.repositories.stock_api_repository import StockApiRepository
 from app.domain.stock.services.stock_service import StockService
+from app.domain.chart.chart_client import ChartClient
+from app.domain.chart.repositories.chart_repository import ChartRepository
+from app.domain.chart.services.chart_service import ChartService
 
 
 class Container(containers.DeclarativeContainer):
@@ -15,7 +18,8 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "app.api.rank_controller",
             "app.api.stock_controller",
-            "app.api.v1.trading"
+            "app.api.v1.trading",
+            "app.api.v1.chart",
         ],
     )
 
@@ -23,6 +27,7 @@ class Container(containers.DeclarativeContainer):
     auth_client = providers.Singleton(AuthClient)
     rank_client = providers.Singleton(RankClient)
     stock_client = providers.Singleton(StockClient)
+    chart_client = providers.Singleton(ChartClient)
 
     # Repositories
     rank_repository = providers.Factory(
@@ -37,6 +42,12 @@ class Container(containers.DeclarativeContainer):
         stock_client=stock_client
     )
 
+    chart_repository = providers.Factory(
+        ChartRepository,
+        auth_client=auth_client,
+        chart_client=chart_client,
+    )
+
     # Services
     rank_service = providers.Factory(
         RankService,
@@ -44,3 +55,5 @@ class Container(containers.DeclarativeContainer):
     )
 
     stock_service = providers.Factory(StockService, stock_repository=stock_repository)
+
+    chart_service = providers.Factory(ChartService, chart_repository=chart_repository)
