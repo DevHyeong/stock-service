@@ -15,9 +15,11 @@ from app.containers import Container
 router = APIRouter(prefix="/chart", tags=["차트 데이터 (키움)"])
 
 
-@router.get("/{stock_code}/minute", response_model=MinuteChartResponse)
+# ── 분봉 ──────────────────────────────────────────────────────────────────────
+
+@router.post("/{stock_code}/minute", response_model=MinuteChartResponse)
 @inject
-async def get_minute_chart(
+async def sync_minute_chart(
     stock_code: str,
     tic_scope: str = Query("1", description="틱범위: 1, 3, 5, 10, 15, 30, 45, 60"),
     upd_stkpc_tp: str = Query("1", description="수정주가구분: 0(미적용), 1(적용)"),
@@ -26,22 +28,11 @@ async def get_minute_chart(
     next_key: Optional[str] = Query(None, description="연속조회키"),
     chart_service: ChartService = Depends(Provide[Container.chart_service]),
 ) -> MinuteChartResponse:
-    '''분봉차트 조회 (ka10080)
+    '''분봉 차트 조회 및 저장 (ka10080)
 
-    주식의 분 단위 차트 데이터를 조회합니다.
-
-    Args:
-        stock_code: 종목코드 (예: 005930)
-        tic_scope: 틱범위 (1, 3, 5, 10, 15, 30, 45, 60분)
-        upd_stkpc_tp: 수정주가구분 (0: 미적용, 1: 적용)
-        base_dt: 기준일자 (YYYYMMDD, 생략 시 최근 데이터)
-        cont_yn: 연속조회여부
-        next_key: 연속조회키
-
-    Returns:
-        분봉 OHLCV 데이터 리스트
+    Kiwoom API에서 분봉 데이터를 가져와 DB에 저장합니다.
     '''
-    return await chart_service.get_minute_chart(
+    return await chart_service.sync_minute_chart(
         stk_cd=stock_code,
         tic_scope=tic_scope,
         upd_stkpc_tp=upd_stkpc_tp,
@@ -51,9 +42,25 @@ async def get_minute_chart(
     )
 
 
-@router.get("/{stock_code}/day", response_model=DayChartResponse)
+@router.get("/{stock_code}/minute", response_model=MinuteChartResponse)
 @inject
-async def get_day_chart(
+async def get_minute_chart(
+    stock_code: str,
+    date: str = Query(..., description="조회 날짜 (YYYYMMDD)"),
+    chart_service: ChartService = Depends(Provide[Container.chart_service]),
+) -> MinuteChartResponse:
+    '''분봉 차트 DB 조회
+
+    DB에 저장된 분봉 데이터를 반환합니다.
+    '''
+    return await chart_service.get_minute_chart(stk_cd=stock_code, date=date)
+
+
+# ── 일봉 ──────────────────────────────────────────────────────────────────────
+
+@router.post("/{stock_code}/day", response_model=DayChartResponse)
+@inject
+async def sync_day_chart(
     stock_code: str,
     base_dt: str = Query(..., description="기준일자 (YYYYMMDD)"),
     upd_stkpc_tp: str = Query("1", description="수정주가구분: 0(미적용), 1(적용)"),
@@ -61,21 +68,51 @@ async def get_day_chart(
     next_key: Optional[str] = Query(None, description="연속조회키"),
     chart_service: ChartService = Depends(Provide[Container.chart_service]),
 ) -> DayChartResponse:
-    '''일봉차트 조회 (ka10081)
+    '''일봉 차트 조회 및 저장 (ka10081)
 
-    주식의 일 단위 차트 데이터를 조회합니다.
-
-    Args:
-        stock_code: 종목코드 (예: 005930)
-        base_dt: 기준일자 (YYYYMMDD)
-        upd_stkpc_tp: 수정주가구분 (0: 미적용, 1: 적용)
-        cont_yn: 연속조회여부
-        next_key: 연속조회키
-
-    Returns:
-        일봉 OHLCV 데이터 리스트
+    Kiwoom API에서 일봉 데이터를 가져와 DB에 저장합니다.
     '''
-    return await chart_service.get_day_chart(
+    return await chart_service.sync_day_chart(
+        stk_cd=stock_code,
+        base_dt=base_dt,
+        upd_stkpc_tp=upd_stkpc_tp,
+        cont_yn=cont_yn,
+        next_key=next_key,
+    )
+
+
+@router.get("/{stock_code}/day", response_model=DayChartResponse)
+@inject
+async def get_day_chart(
+    stock_code: str,
+    start_dt: str = Query(..., description="조회 시작일 (YYYYMMDD)"),
+    end_dt: str = Query(..., description="조회 종료일 (YYYYMMDD)"),
+    chart_service: ChartService = Depends(Provide[Container.chart_service]),
+) -> DayChartResponse:
+    '''일봉 차트 DB 조회
+
+    DB에 저장된 일봉 데이터를 반환합니다.
+    '''
+    return await chart_service.get_day_chart(stk_cd=stock_code, start_dt=start_dt, end_dt=end_dt)
+
+
+# ── 주봉 ──────────────────────────────────────────────────────────────────────
+
+@router.post("/{stock_code}/week", response_model=WeekChartResponse)
+@inject
+async def sync_week_chart(
+    stock_code: str,
+    base_dt: str = Query(..., description="기준일자 (YYYYMMDD)"),
+    upd_stkpc_tp: str = Query("1", description="수정주가구분: 0(미적용), 1(적용)"),
+    cont_yn: Optional[str] = Query(None, description="연속조회여부"),
+    next_key: Optional[str] = Query(None, description="연속조회키"),
+    chart_service: ChartService = Depends(Provide[Container.chart_service]),
+) -> WeekChartResponse:
+    '''주봉 차트 조회 및 저장 (ka10082)
+
+    Kiwoom API에서 주봉 데이터를 가져와 DB에 저장합니다.
+    '''
+    return await chart_service.sync_week_chart(
         stk_cd=stock_code,
         base_dt=base_dt,
         upd_stkpc_tp=upd_stkpc_tp,
@@ -88,27 +125,34 @@ async def get_day_chart(
 @inject
 async def get_week_chart(
     stock_code: str,
+    start_dt: str = Query(..., description="조회 시작일 (YYYYMMDD)"),
+    end_dt: str = Query(..., description="조회 종료일 (YYYYMMDD)"),
+    chart_service: ChartService = Depends(Provide[Container.chart_service]),
+) -> WeekChartResponse:
+    '''주봉 차트 DB 조회
+
+    DB에 저장된 주봉 데이터를 반환합니다.
+    '''
+    return await chart_service.get_week_chart(stk_cd=stock_code, start_dt=start_dt, end_dt=end_dt)
+
+
+# ── 월봉 ──────────────────────────────────────────────────────────────────────
+
+@router.post("/{stock_code}/month", response_model=MonthChartResponse)
+@inject
+async def sync_month_chart(
+    stock_code: str,
     base_dt: str = Query(..., description="기준일자 (YYYYMMDD)"),
     upd_stkpc_tp: str = Query("1", description="수정주가구분: 0(미적용), 1(적용)"),
     cont_yn: Optional[str] = Query(None, description="연속조회여부"),
     next_key: Optional[str] = Query(None, description="연속조회키"),
     chart_service: ChartService = Depends(Provide[Container.chart_service]),
-) -> WeekChartResponse:
-    '''주봉차트 조회 (ka10082)
+) -> MonthChartResponse:
+    '''월봉 차트 조회 및 저장 (ka10083)
 
-    주식의 주 단위 차트 데이터를 조회합니다.
-
-    Args:
-        stock_code: 종목코드 (예: 005930)
-        base_dt: 기준일자 (YYYYMMDD)
-        upd_stkpc_tp: 수정주가구분 (0: 미적용, 1: 적용)
-        cont_yn: 연속조회여부
-        next_key: 연속조회키
-
-    Returns:
-        주봉 OHLCV 데이터 리스트
+    Kiwoom API에서 월봉 데이터를 가져와 DB에 저장합니다.
     '''
-    return await chart_service.get_week_chart(
+    return await chart_service.sync_month_chart(
         stk_cd=stock_code,
         base_dt=base_dt,
         upd_stkpc_tp=upd_stkpc_tp,
@@ -121,30 +165,12 @@ async def get_week_chart(
 @inject
 async def get_month_chart(
     stock_code: str,
-    base_dt: str = Query(..., description="기준일자 (YYYYMMDD)"),
-    upd_stkpc_tp: str = Query("1", description="수정주가구분: 0(미적용), 1(적용)"),
-    cont_yn: Optional[str] = Query(None, description="연속조회여부"),
-    next_key: Optional[str] = Query(None, description="연속조회키"),
+    start_dt: str = Query(..., description="조회 시작일 (YYYYMMDD)"),
+    end_dt: str = Query(..., description="조회 종료일 (YYYYMMDD)"),
     chart_service: ChartService = Depends(Provide[Container.chart_service]),
 ) -> MonthChartResponse:
-    '''월봉차트 조회 (ka10083)
+    '''월봉 차트 DB 조회
 
-    주식의 월 단위 차트 데이터를 조회합니다.
-
-    Args:
-        stock_code: 종목코드 (예: 005930)
-        base_dt: 기준일자 (YYYYMMDD)
-        upd_stkpc_tp: 수정주가구분 (0: 미적용, 1: 적용)
-        cont_yn: 연속조회여부
-        next_key: 연속조회키
-
-    Returns:
-        월봉 OHLCV 데이터 리스트
+    DB에 저장된 월봉 데이터를 반환합니다.
     '''
-    return await chart_service.get_month_chart(
-        stk_cd=stock_code,
-        base_dt=base_dt,
-        upd_stkpc_tp=upd_stkpc_tp,
-        cont_yn=cont_yn,
-        next_key=next_key,
-    )
+    return await chart_service.get_month_chart(stk_cd=stock_code, start_dt=start_dt, end_dt=end_dt)
