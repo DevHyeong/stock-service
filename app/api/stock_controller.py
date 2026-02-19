@@ -6,10 +6,34 @@ from fastapi import APIRouter, Depends, Query
 
 from app.containers import Container
 from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeStock, InvestorDailyTradeStockRequest
+from app.domain.stock.dto.stock_basic_info import StockBasicInfoRequest
 from app.domain.stock.services.stock_service import StockService
 from app.schemas.response import APIResponse
 
 router = APIRouter(prefix="/stock", tags=["stock"])
+
+
+@router.post("/basic-info/sync")
+@inject
+async def sync_stock_basic_info(
+    stk_cd: str = Query(..., description="종목코드 (예: 005930)"),
+    stock_sync_service: StockService = Depends(Provide[Container.stock_service]),
+):
+    try:
+        result = await stock_sync_service.sync_stock_basic_info(
+            request=StockBasicInfoRequest(stk_cd=stk_cd)
+        )
+        return APIResponse(
+            success=True,
+            message=f"주식 기본 정보 동기화 완료: {result.stk_nm}({result.stk_cd})",
+            data=result.model_dump(by_alias=True),
+        )
+    except Exception as e:
+        return APIResponse(
+            success=False,
+            message="주식 기본 정보 동기화 실패",
+            error=str(e)
+        )
 
 
 @router.post("/investor-daily-trade/sync")

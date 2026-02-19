@@ -2,6 +2,7 @@ from itertools import product
 from typing import List
 
 from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeStock, InvestorDailyTradeStockRequest
+from app.domain.stock.dto.stock_basic_info import StockBasicInfo, StockBasicInfoRequest
 from app.domain.stock.repositories.stock_api_repository import StockApiRepository
 from app.domain.stock.unit_of_work import StockUnitOfWork
 
@@ -44,6 +45,18 @@ class StockService:
             await uow.commit()
 
         return all_trades
+
+    async def sync_stock_basic_info(
+        self,
+        request: StockBasicInfoRequest,
+    ) -> StockBasicInfo:
+        info = await self.stock_repository.get_stock_basic_info(request)
+
+        async with StockUnitOfWork() as uow:
+            await uow.stock_basic_info_repo.upsert(info)
+            await uow.commit()
+
+        return info
 
     async def get_investor_daily_trade_stock(
         self,

@@ -6,12 +6,39 @@ from app.common.kiwoom_api_path import INVESTOR_DAILY_TRADE_STOCK_PATH
 from app.config import settings
 from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeStockRequest, InvestorDailyTradeResponse, \
     InvestorDailyTradeStock
+from app.domain.stock.dto.stock_basic_info import StockBasicInfoRequest, StockBasicInfo, StockBasicInfoResponse
 
 
 class StockClient:
 
     def __init__(self):
         self.base_url = settings.KIWOOM_BASE_URL
+
+    # 주식 기본 정보 요청
+    async def get_stock_basic_info(
+        self,
+        access_token: str,
+        request: StockBasicInfoRequest,
+    ) -> StockBasicInfo:
+        headers = {
+            "api-id": "ka10001",
+            "authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        }
+
+        api = ApiClient(
+            base_url=self.base_url,
+            default_headers=headers,
+        )
+
+        response = await api._request(
+            method="POST",
+            path=INVESTOR_DAILY_TRADE_STOCK_PATH,
+            response_model=StockBasicInfoResponse,
+            json=request.model_dump(),
+        )
+
+        return response
 
     # 투자자별 일별 매매 종목 요청
     async def get_investor_daily_trade_stock(
