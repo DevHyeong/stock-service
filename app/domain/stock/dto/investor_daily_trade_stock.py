@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -23,7 +23,7 @@ class InvestorDailyTradeResponse(BaseModel):
 class InvestorDailyTradeStockRequest(BaseModel):
     strt_dt: str  # 시작일자 (YYYYMMDD)
     end_dt: str  # 종료일자 (YYYYMMDD)
-    trde_tp: str  # 매매구분 (1: 순매도, 2: 순매수)
-    mrkt_tp: str  # 시장구분 (001: 코스피, 101: 코스닥)
-    invsr_tp: str  # 투자자구분 (8000: 개인, 9000: 외국인, ...)
-    stex_tp: str  # 거래소구분 (1: KRX, 2: NXT, 3: 통합)
+    trde_tp: Optional[str] = None  # 매매구분 (1: 순매도, 2: 순매수)
+    mrkt_tp: Optional[str] = None  # 시장구분 (001: 코스피, 101: 코스닥)
+    invsr_tp: Optional[str] = None  # 투자자구분 (8000: 개인, 9000: 외국인, ...)
+    stex_tp: Optional[str] = None  # 거래소구분 (1: KRX, 2: NXT, 3: 통합)

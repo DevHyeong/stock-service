@@ -35,7 +35,7 @@ class StockClient:
             method= "POST",
             path= INVESTOR_DAILY_TRADE_STOCK_PATH,
             response_model=InvestorDailyTradeResponse,
-            json=investorDailyTradeStockRequest.model_dump()
+            json=investorDailyTradeStockRequest.model_dump(exclude_none=True)
         )
 
         return response.invsr_daly_trde_stk

@@ -24,10 +24,10 @@ class InvestorDailyTradeRepository:
             {
                 'start_date': request.strt_dt,
                 'end_date': request.end_dt,
-                'trade_type': request.trde_tp,
-                'market_type': request.mrkt_tp,
-                'investor_type': request.invsr_tp,
-                'exchange_type': request.stex_tp,
+                'trade_type': request.trde_tp or "",
+                'market_type': request.mrkt_tp or "",
+                'investor_type': request.invsr_tp or "",
+                'exchange_type': request.stex_tp or "",
                 'stock_code': t.stk_cd,
                 'stock_name': t.stk_nm,
                 'net_sell_qty': t.netslmt_qty,
@@ -66,17 +66,20 @@ class InvestorDailyTradeRepository:
         self,
         request: InvestorDailyTradeStockRequest
     ) -> List[InvestorDailyTradeStock]:
-        stmt = (
-            select(InvestorDailyTrade)
-            .where(
-                InvestorDailyTrade.start_date == request.strt_dt,
-                InvestorDailyTrade.end_date == request.end_dt,
-                InvestorDailyTrade.trade_type == request.trde_tp,
-                InvestorDailyTrade.market_type == request.mrkt_tp,
-                InvestorDailyTrade.investor_type == request.invsr_tp,
-                InvestorDailyTrade.exchange_type == request.stex_tp,
-            )
-        )
+        conditions = [
+            InvestorDailyTrade.start_date == request.strt_dt,
+            InvestorDailyTrade.end_date == request.end_dt,
+        ]
+        if request.trde_tp is not None:
+            conditions.append(InvestorDailyTrade.trade_type == request.trde_tp)
+        if request.mrkt_tp is not None:
+            conditions.append(InvestorDailyTrade.market_type == request.mrkt_tp)
+        if request.invsr_tp is not None:
+            conditions.append(InvestorDailyTrade.investor_type == request.invsr_tp)
+        if request.stex_tp is not None:
+            conditions.append(InvestorDailyTrade.exchange_type == request.stex_tp)
+
+        stmt = select(InvestorDailyTrade).where(*conditions)
 
         result = await self.db.execute(stmt)
         rows = result.scalars().all()
