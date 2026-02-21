@@ -29,6 +29,15 @@ async def get_db():
         finally:
             await session.close()
 
+# 배치 작업용 세션 생성 함수
+async def get_session():
+    """배치 작업에서 사용하는 세션 생성 함수"""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
+
 # 테이블 초기화 (개발용)
 async def init_db():
     async with engine.begin() as conn:
