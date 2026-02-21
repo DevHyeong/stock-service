@@ -6,6 +6,7 @@ from app.api.v1 import auth, foreign, stock, market, sector, trading, chart
 from app.config import settings
 from app.containers import Container
 from app.core.logger import logger
+from app.batch.scheduler import start_scheduler, shutdown_scheduler
 
 
 def create_app() -> FastAPI:
@@ -55,10 +56,19 @@ async def startup_event():
     '''앱 시작 시 실행'''
     logger.info(f"{settings.APP_NAME} 시작됨")
 
+    # 배치 스케줄러 시작
+    if settings.ENABLE_BATCH_SCHEDULER:
+        start_scheduler()
+        logger.info("배치 스케줄러 활성화됨")
+
 
 @app.on_event("shutdown")
 async def shutdown_event():
     '''앱 종료 시 실행'''
+    # 배치 스케줄러 종료
+    if settings.ENABLE_BATCH_SCHEDULER:
+        shutdown_scheduler()
+
     logger.info(f"{settings.APP_NAME} 종료됨")
 
 
