@@ -18,7 +18,7 @@ def get_stock_service(db: AsyncSession = Depends(get_db)) -> StockService:
 @router.get("/list")
 async def get_stock_list(
     skip: int = Query(0, ge=0, description="건너뛸 개수"),
-    limit: int = Query(100, ge=1, le=1000, description="조회 개수"),
+    limit: int = Query(100, ge=1, description="조회 개수"),
     market_code: Optional[MarketCode] = Query(None, description="시장구분 (0: KOSPI, 10: KOSDAQ, 등)"),
     stock_service: StockService = Depends(get_stock_service)
 ):
