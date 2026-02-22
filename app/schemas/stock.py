@@ -212,7 +212,7 @@ class StockResponse(BaseModel):
     reg_day: Optional[str] = Field(None, description="상장일(YYYYMMDD)")
     last_price: Optional[str] = Field(None, description="최종가격")
     state: Optional[str] = Field(None, description="종목상태")
-    market_code: Optional[str] = Field(None, description="시장코드(0:거래소,1:코스닥)")
+    market_code: Optional[str] = Field(None, description="시장코드(0:코스피,10:코스닥)")
     market_name: Optional[str] = Field(None, description="시장명")
     up_name: Optional[str] = Field(None, description="업종명")
     up_size_name: Optional[str] = Field(None, description="업종규모명")
