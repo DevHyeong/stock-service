@@ -46,6 +46,21 @@ class StockService:
 
         return all_trades
 
+    async def get_stock_basic_info(
+        self,
+        stk_cd: str,
+    ) -> StockBasicInfo | None:
+        """DB에서 주식 기본정보 조회
+
+        Args:
+            stk_cd: 종목코드
+
+        Returns:
+            주식 기본정보 또는 None
+        """
+        async with StockUnitOfWork() as uow:
+            return await uow.stock_basic_info_repo.get_by_code(stk_cd)
+
     async def sync_stock_basic_info(
         self,
         request: StockBasicInfoRequest,

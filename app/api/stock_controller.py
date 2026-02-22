@@ -13,6 +13,43 @@ from app.schemas.response import APIResponse
 router = APIRouter(prefix="/stock", tags=["stock"])
 
 
+@router.get("/basic-info")
+@inject
+async def get_stock_basic_info(
+    stk_cd: str = Query(..., description="종목코드 (예: 005930)"),
+    stock_service: StockService = Depends(Provide[Container.stock_service]),
+):
+    """주식 기본정보 조회
+
+    DB에 동기화된 주식 기본정보를 조회합니다.
+
+    Args:
+        stk_cd: 종목코드 (예: 005930)
+
+    Returns:
+        주식 기본정보 (종목명, 현재가, 시가, 고가, 저가, PER, PBR, EPS 등)
+    """
+    try:
+        result = await stock_service.get_stock_basic_info(stk_cd=stk_cd)
+        if result is None:
+            return APIResponse(
+                success=False,
+                message=f"종목을 찾을 수 없습니다: {stk_cd}",
+                error="NOT_FOUND"
+            )
+        return APIResponse(
+            success=True,
+            message=f"주식 기본정보 조회 성공: {result.stk_nm}({result.stk_cd})",
+            data=result.model_dump(by_alias=True),
+        )
+    except Exception as e:
+        return APIResponse(
+            success=False,
+            message="주식 기본정보 조회 실패",
+            error=str(e)
+        )
+
+
 @router.post("/basic-info/sync")
 @inject
 async def sync_stock_basic_info(
