@@ -17,7 +17,7 @@ class StockService:
         Args:
             skip: 건너뛸 개수
             limit: 조회할 개수
-            market_code: 시장구분 (0: KOSPI, 1: KOSDAQ)
+            market_code: 시장구분 (0: KOSPI, 10: KOSDAQ, 등)
 
         Returns:
             종목 리스트와 전체 개수
@@ -39,7 +39,7 @@ class StockService:
         """키움 API에서 종목 리스트를 가져와 DB에 동기화
 
         Args:
-            market_code: 시장구분 (0: KOSPI, 1: KOSDAQ, 전체는 빈 문자열)
+            market_code: 시장구분 (0: KOSPI, 10: KOSDAQ, 등)
 
         Returns:
             동기화된 종목 수
