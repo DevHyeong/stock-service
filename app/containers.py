@@ -20,6 +20,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.stock_controller",
             "app.api.v1.trading",
             "app.api.v1.chart",
+            "app.api.v1.analysis",
         ],
     )
 
