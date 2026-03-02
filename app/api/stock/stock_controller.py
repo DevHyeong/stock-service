@@ -1,16 +1,98 @@
-# app/api/stock_controller.py
-from typing import List, Optional
+from typing import Optional
 
-from dependency_injector.wiring import Provide, inject
+from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.containers import Container
-from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeStock, InvestorDailyTradeStockRequest
+from app.db import get_db
+from app.domain.stock.dto.investor_daily_trade_stock import InvestorDailyTradeStockRequest
 from app.domain.stock.dto.stock_basic_info import StockBasicInfoRequest
-from app.domain.stock.services.stock_service import StockService
+from app.repositories.stock_repository import StockRepository
 from app.schemas.response import APIResponse
+from app.schemas.enums import MarketCode
+from app.services.stock_service import StockService
 
-router = APIRouter(prefix="/stock", tags=["stock"])
+router = APIRouter(prefix="/stock", tags=["종목 관리"])
+
+def get_stock_service(db: AsyncSession = Depends(get_db)) -> StockService:
+    repo = StockRepository(db)
+    return StockService(repo)
+
+
+@router.get("/list")
+async def get_stock_list(
+    skip: int = Query(0, ge=0, description="건너뛸 개수 (페이지네이션)"),
+    limit: int = Query(100, ge=1, le=1000, description="조회 개수 (최대 1000)"),
+    market_code: Optional[MarketCode] = Query(None, description="시장구분 (0: KOSPI, 10: KOSDAQ, 등)"),
+    start_date: Optional[str] = Query(None, description="조회 시작일 (YYYY-MM-DD, created_at 기준)", pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    end_date: Optional[str] = Query(None, description="조회 종료일 (YYYY-MM-DD, created_at 기준)", pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    order_by: Optional[str] = Query(
+        None,
+        description="정렬 기준",
+        pattern="^(market_cap_desc|market_cap_asc|created_at_desc|created_at_asc|name_asc|name_desc)$"
+    ),
+    stock_service: StockService = Depends(get_stock_service)
+):
+    """종목 리스트 조회 (페이지네이션, 필터, 정렬 지원)
+
+    DB에 저장된 종목 리스트를 조회합니다.
+
+    **페이지네이션:**
+    - skip: 건너뛸 개수 (0부터 시작)
+    - limit: 조회할 개수 (최대 1000)
+
+    **필터:**
+    - market_code: 시장구분 (0: KOSPI, 10: KOSDAQ, 30: K-OTC, 50: KONEX, 8: ETF, 60: ETN)
+    - start_date: 종목 등록 시작일 (created_at 기준)
+    - end_date: 종목 등록 종료일 (created_at 기준)
+
+    **정렬:**
+    - market_cap_desc: 시가총액 내림차순 (큰 값부터)
+    - market_cap_asc: 시가총액 오름차순 (작은 값부터)
+    - created_at_desc: 등록일 내림차순 (최신순)
+    - created_at_asc: 등록일 오름차순 (과거순)
+    - name_asc: 종목명 오름차순 (ㄱ-ㅎ)
+    - name_desc: 종목명 내림차순 (ㅎ-ㄱ)
+
+    **사용 예시:**
+    - 시가총액 상위 100개: `?limit=100&order_by=market_cap_desc`
+    - 코스피 최신 등록 종목: `?market_code=0&order_by=created_at_desc`
+    - 2026년 1월 등록된 종목: `?start_date=2026-01-01&end_date=2026-01-31`
+
+    Args:
+        skip: 페이지네이션 오프셋
+        limit: 페이지네이션 리미트
+        market_code: 시장구분 필터
+        start_date: 조회 시작일 (YYYY-MM-DD)
+        end_date: 조회 종료일 (YYYY-MM-DD)
+        order_by: 정렬 기준
+
+    Returns:
+        종목 리스트와 전체 개수
+    """
+    try:
+        result = await stock_service.get_stock_list(
+            skip=skip,
+            limit=limit,
+            market_code=market_code.value if market_code else None,
+            start_date=start_date,
+            end_date=end_date,
+            order_by=order_by,
+        )
+        return APIResponse(
+            success=True,
+            message="종목 리스트 조회 성공",
+            data=result.model_dump()
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return APIResponse(
+            success=False,
+            message="종목 리스트 조회 실패",
+            error=str(e)
+        )
 
 
 @router.get("/basic-info")
@@ -141,3 +223,4 @@ async def get_investor_daily_trade_stock(
             message="투자자별 일별 매매 조회 실패",
             error=str(e)
         )
+
